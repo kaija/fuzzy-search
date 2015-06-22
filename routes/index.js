@@ -1,5 +1,6 @@
 var express = require('express');
 var elasticsearch = require('elasticsearch');
+var config = require('../config');
 
 var poolModule = require('generic-pool');
 var pool = poolModule.Pool({
@@ -9,6 +10,8 @@ var pool = poolModule.Pool({
           host: 'localhost:9200'
         });
         callback(null, client);
+    },
+    destroy  : function(client){
     },
     max      : 10,
     min      : 2,
@@ -37,13 +40,16 @@ router.post('/search', function(req, res, next) {
         result['error'] = err;
         res.send(result);
       } else {
-        client.search({q:req.body.keyword}).then(
+        var lucent = req.body.keyword + '~';
+        //var lucent = req.body.keyword;
+        client.search({index:config.index, type: config.type, q: lucent, size: 100}).then(
           function(body){
             pool.release(client);
             result.result = body.hits.hits;
             res.send(result);
           },
           function(error){
+            pool.release(client);
             result.error = error;
             res.send(result);
           }
