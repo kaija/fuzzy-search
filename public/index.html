@@ -1,0 +1,78 @@
+<html>
+<head>
+  <title>Answer Pool Search Web Service</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <!-- Optional theme -->
+  <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css"> -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='http://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+  <style>
+    html *
+    {
+      font-family: Roboto+Slab,"微軟正黑體" !important;
+    }
+    .searchbar {
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+    .brand-primary:{
+      background-color: #337ab7;
+    }
+  </style>
+  <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-62884336-1', 'auto');
+      ga('send', 'pageview');
+
+  </script>
+</head>
+<body>
+<div class="visible-lg" style="height:50px;"></div>
+<div class="bg-info center-block wrapper" style="border-radius: 5px;">
+<div class="container-fluid text-center">
+<p><h3>Answer finder</h3></p>
+</div>
+<div class="form-group col-md-12">
+<input type="text" class="form-control" id="search" placeholder="Search keyword"/>
+</div>
+<div class="form-group col-md-12" id="result">
+</div>
+<div style="height:50px;"></div>
+</div>
+<script>
+function updateSearch(list){
+  var html = "<table class=\"table table-hover\"><tbody>";
+  for (i in list) {
+    html += "<tr><td>" + list[i]._source.answer +"</td><td>" + list[i]._source.sha1 +"</td><tr>";
+  }
+  html += "</tbody></table>";
+  document.getElementById("result").innerHTML = html;
+}
+$(document).ready(function(){
+  $('#search').keyup(function () {
+    var text = $(this).val();
+    if(text.length == 0) return;
+    $.ajax({
+      type: "POST",
+      url: "/search",
+      data: {keyword: text},
+      success: function(res) {
+        updateSearch(res.result);
+      },
+      error: function(xhr, err, thr){
+        //alert(thr);
+      },
+      complete: function(){
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
