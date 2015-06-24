@@ -27,6 +27,31 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.post('/delete', function(req, res, next) {
+  var result = {
+    result: ''
+  };
+  pool.acquire(function(err, client) {
+    if(err) {
+      result['error'] = err;
+      res.send(result);
+    } else {
+      client.indices.delete({index: config.index}).then(
+        function(body) {
+          pool.release(client);
+          res.send(body);
+        },
+        function(error) {
+          pool.release(client);
+          result.error = error;
+          res.send(result);
+        }
+      );
+    }
+  });
+  res.send("OK");
+});
+
 router.post('/search', function(req, res, next) {
   var result = {
     result: ''
