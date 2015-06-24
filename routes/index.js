@@ -28,6 +28,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/delete', function(req, res, next) {
+  console.log("Delete all index");
   var result = {
     result: ''
   };
@@ -36,20 +37,18 @@ router.post('/delete', function(req, res, next) {
       result['error'] = err;
       res.send(result);
     } else {
-      client.indices.delete({index: config.index}).then(
-        function(body) {
-          pool.release(client);
-          res.send(body);
-        },
-        function(error) {
-          pool.release(client);
-          result.error = error;
+      client.indices.delete({index: config.index}, function(err, body){
+        pool.release(client);
+        if (err) {
+          result['error'] = err;
+          res.send(result);
+        } else {
+          result.result = body;
           res.send(result);
         }
-      );
+      });
     }
   });
-  res.send("OK");
 });
 
 router.post('/search', function(req, res, next) {
