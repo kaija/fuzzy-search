@@ -22,10 +22,6 @@ var pool = poolModule.Pool({
 
 var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
 
 router.post('/delete', function(req, res, next) {
   console.log("Delete all index");
@@ -64,8 +60,8 @@ router.post('/search', function(req, res, next) {
         result['error'] = err;
         res.send(result);
       } else {
-        var lucent = req.body.keyword + '~';
-        //var lucent = req.body.keyword;
+        //var lucent = req.body.keyword + '~';
+        var lucent = req.body.keyword;
         client.search({index:config.index, type: config.type, q: lucent, size: 100}).then(
           function(body){
             pool.release(client);
